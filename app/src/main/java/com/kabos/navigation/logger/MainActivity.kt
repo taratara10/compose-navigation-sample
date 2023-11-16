@@ -3,46 +3,88 @@ package com.kabos.navigation.logger
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.Navigation
 import androidx.navigation.compose.rememberNavController
-import com.kabos.navigation.logger.ui.theme.NavigationLoggerTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val navController = rememberNavController()
-            NavigationLoggerTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    MainNavHost(navHostController = navController)
-                }
-            }
+            MainApp()
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun MainApp() {
+    val navController = rememberNavController()
+    Scaffold(
+        bottomBar = {
+            MainBottomAppBar(
+                onClickHome = {
+                    navController.navigate(homeGraph) {
+
+                    }
+                },
+                onClickFavorite = { navController.navigate(favoriteGraph) },
+                onClickSearch = { navController.navigate(searchGraph) },
+            )
+        }
+    ) { innerPadding ->
+        Surface(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        ) {
+            MainNavHost(navHostController = navController)
+        }
+    }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    NavigationLoggerTheme {
-        Greeting("Android")
+fun MainBottomAppBar(
+    onClickHome: () -> Unit,
+    onClickFavorite: () -> Unit,
+    onClickSearch: () -> Unit,
+) {
+    BottomAppBar {
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            IconButton(
+                onClick = onClickHome,
+                content = {
+                    Icon(imageVector = Icons.Default.Home, contentDescription = "home")
+                }
+            )
+            IconButton(
+                onClick = onClickFavorite,
+                content = {
+                    Icon(imageVector = Icons.Default.Favorite, contentDescription = "favorite")
+                }
+            )
+            IconButton(
+                onClick = onClickSearch,
+                content = {
+                    Icon(imageVector = Icons.Default.Search, contentDescription = "search")
+                }
+            )
+        }
     }
 }
