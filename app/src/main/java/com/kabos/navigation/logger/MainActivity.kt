@@ -3,7 +3,9 @@ package com.kabos.navigation.logger
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,11 +16,16 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.LightGray
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
 class MainActivity : ComponentActivity() {
@@ -33,12 +40,15 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainApp() {
     val navController = rememberNavController()
+    navController.debugLog()
+    val currentBackStackEntry = navController.currentBackStackEntryAsState()
+
     Scaffold(
         bottomBar = {
             MainBottomAppBar(
+                navBackStackEntry = currentBackStackEntry.value,
                 onClickHome = {
                     navController.navigate(homeGraph) {
-
                     }
                 },
                 onClickFavorite = { navController.navigate(favoriteGraph) },
@@ -58,6 +68,7 @@ fun MainApp() {
 
 @Composable
 fun MainBottomAppBar(
+    navBackStackEntry: NavBackStackEntry?,
     onClickHome: () -> Unit,
     onClickFavorite: () -> Unit,
     onClickSearch: () -> Unit,
@@ -67,24 +78,43 @@ fun MainBottomAppBar(
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            IconButton(
+            BottomAppBarItem(
                 onClick = onClickHome,
-                content = {
-                    Icon(imageVector = Icons.Default.Home, contentDescription = "home")
-                }
+                isSelected = navBackStackEntry.isSelected(homeGraph),
+                icon = Icons.Default.Home,
             )
-            IconButton(
+            BottomAppBarItem(
                 onClick = onClickFavorite,
-                content = {
-                    Icon(imageVector = Icons.Default.Favorite, contentDescription = "favorite")
-                }
+                isSelected = navBackStackEntry.isSelected(favoriteGraph),
+                icon = Icons.Default.Favorite,
             )
-            IconButton(
+            BottomAppBarItem(
                 onClick = onClickSearch,
-                content = {
-                    Icon(imageVector = Icons.Default.Search, contentDescription = "search")
-                }
+                isSelected = navBackStackEntry.isSelected(searchGraph),
+                icon = Icons.Default.Search,
             )
+        }
+    }
+}
+
+@Composable
+fun BottomAppBarItem(
+    onClick: () -> Unit,
+    isSelected: Boolean,
+    icon: ImageVector,
+) {
+    Box(
+        modifier = Modifier
+            .then(
+                if (isSelected) Modifier.background(LightGray)
+                else Modifier
+            )
+    ) {
+        IconToggleButton(
+            checked = isSelected,
+            onCheckedChange = { onClick() },
+        ) {
+            Icon(imageVector = icon, contentDescription = null)
         }
     }
 }
