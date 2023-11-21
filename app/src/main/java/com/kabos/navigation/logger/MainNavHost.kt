@@ -96,11 +96,7 @@ fun NavGraphBuilder.searchGraph() {
 }
 
 @Composable
-fun NavController.debugLog() {
-    val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
-//        Log.d("Navigation", "${destination.parent}")
-    }
-    this.addOnDestinationChangedListener(listener = listener)
+fun NavController.DebugLog() {
     val backStackEntry = currentBackStackEntryAsState().value
     Log.d("Navigation BackStackEntry", "${backStackEntry?.toLog()}")
 }
@@ -117,21 +113,15 @@ fun NavBackStackEntry.toLog(): String {
 
 fun NavGraph.toLog(): String {
     return """
-            - NavGraph
-                - route: $route
-                - startDestinationRoute: $startDestinationRoute
-                - node: ${this.nodes}
-                - parent: ${parent?.toLog()}
-    """
+        - NavGraph
+            - route: $route
+            - startDestinationRoute: $startDestinationRoute
+            - node: ${this.nodes}
+            - parent: ${parent?.toLog()}
+    """.prependIndent()
 }
 
 fun NavBackStackEntry?.isSelected(graph: String): Boolean {
     Log.d("Navigation back", "${this?.destination?.parent}")
     return this?.destination?.parent?.route == graph
-}
-
-fun NavController.navigateGraph() {
-    this.navigate("") {
-
-    }
 }
